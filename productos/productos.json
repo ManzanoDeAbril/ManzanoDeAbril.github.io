@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "nombre": "Leche Entera 1L",
+    "categoria": "Lácteos",
+    "precio": 1200,
+    "stock": 50,
+    "proveedor": "Soprole"
+  },
+  {
+    "id": 2,
+    "nombre": "Pan de Molde 600g",
+    "categoria": "Panadería",
+    "precio": 1800,
+    "stock": 30,
+    "proveedor": "Ideal"
+  },
+  {
+    "id": 3,
+    "nombre": "Arroz Grado 2 1kg",
+    "categoria": "Abarrotes",
+    "precio": 1500,
+    "stock": 80,
+    "proveedor": "Tucapel"
+  },
+  {
+    "id": 4,
+    "nombre": "Aceite Vegetal 1L",
+    "categoria": "Abarrotes",
+    "precio": 2500,
+    "stock": 40,
+    "proveedor": "Natura"
+  },
+  {
+    "id": 5,
+    "nombre": "Pollo Entero",
+    "categoria": "Carnes",
+    "precio": 4800,
+    "stock": 25,
+    "proveedor": "Super Pollo"
+  },
+  {
+    "id": 6,
+    "nombre": "Manzana Roja 1kg",
+    "categoria": "Frutas y Verduras",
+    "precio": 2200,
+    "stock": 60,
+    "proveedor": "Fruna"
+  },
+  {
+    "id": 7,
+    "nombre": "Jabón de Ropa 1kg",
+    "categoria": "Limpieza",
+    "precio": 3200,
+    "stock": 45,
+    "proveedor": "Omo"
+  },
+  {
+    "id": 8,
+    "nombre": "Bebida Cola 2L",
+    "categoria": "Bebidas",
+    "precio": 2100,
+    "stock": 70,
+    "proveedor": "Coca-Cola"
+  }
+]
