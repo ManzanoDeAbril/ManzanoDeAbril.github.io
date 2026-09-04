@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Productos - Supermercado</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../firebase-config.js"></script>
 </head>
 <body>
 
@@ -83,30 +84,25 @@
 
 <div class="notification" id="notification"></div>
 
-<script>
-    const STORAGE_KEY = 'productos_supermercado';
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+    import {
+        getFirestore,
+        collection,
+        onSnapshot,
+        addDoc,
+        updateDoc,
+        deleteDoc,
+        doc,
+        query,
+        orderBy
+    } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
-    let productos = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    initializeApp(firebaseConfig);
+    const db = getFirestore();
+    const colRef = collection(db, 'productos');
 
-    if (!productos || productos.length === 0) {
-        fetch('productos.json')
-            .then(res => res.json())
-            .then(data => {
-                productos = data;
-                guardar();
-                render();
-            })
-            .catch(() => {
-                productos = [];
-                render();
-            });
-    } else {
-        render();
-    }
-
-    function guardar() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
-    }
+    let productos = [];
 
     function formatearMoneda(valor) {
         return '$' + Number(valor).toLocaleString('es-CL');
@@ -138,8 +134,8 @@
                 <td>${p.proveedor}</td>
                 <td>
                     <div class="actions">
-                        <button class="btn btn-warning" onclick="editar(${p.id})">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminar(${p.id})">Eliminar</button>
+                        <button class="btn btn-warning" onclick="editar('${p.docId}')">Editar</button>
+                        <button class="btn btn-danger" onclick="eliminar('${p.docId}')">Eliminar</button>
                     </div>
                 </td>
             </tr>
@@ -161,27 +157,31 @@
         modal.classList.add('active');
     });
 
-    function editar(id) {
-        const p = productos.find(item => item.id === id);
+    window.editar = function (docId) {
+        const p = productos.find(item => item.docId === docId);
         if (!p) return;
         document.getElementById('modalTitle').textContent = 'Editar Producto';
-        document.getElementById('productoId').value = p.id;
+        document.getElementById('productoId').value = docId;
         document.getElementById('nombre').value = p.nombre;
         document.getElementById('categoria').value = p.categoria;
         document.getElementById('precio').value = p.precio;
         document.getElementById('stock').value = p.stock;
         document.getElementById('proveedor').value = p.proveedor;
         modal.classList.add('active');
-    }
+    };
 
-    function eliminar(id) {
-        const nombre = productos.find(p => p.id === id).nombre;
-        if (!confirm('¿Eliminar el producto "' + nombre + '"?')) return;
-        productos = productos.filter(p => p.id !== id);
-        guardar();
-        render();
-        notificar('Producto eliminado', 'success');
-    }
+    window.eliminar = async function (docId) {
+        const p = productos.find(item => item.docId === docId);
+        if (!p) return;
+        if (!confirm('¿Eliminar el producto "' + p.nombre + '"?')) return;
+        try {
+            await deleteDoc(doc(db, 'productos', docId));
+            notificar('Producto eliminado', 'success');
+        } catch (error) {
+            console.error(error);
+            notificar('Error al eliminar', 'error');
+        }
+    };
 
     document.getElementById('btnCancelar').addEventListener('click', () => {
         modal.classList.remove('active');
@@ -191,8 +191,8 @@
         if (e.target === modal) modal.classList.remove('active');
     });
 
-    document.getElementById('btnGuardar').addEventListener('click', () => {
-        const id = document.getElementById('productoId').value;
+    document.getElementById('btnGuardar').addEventListener('click', async () => {
+        const docId = document.getElementById('productoId').value;
         const nombre = document.getElementById('nombre').value.trim();
         const categoria = document.getElementById('categoria').value;
         const precio = parseFloat(document.getElementById('precio').value);
@@ -204,24 +204,49 @@
             return;
         }
 
-        if (id) {
-            const p = productos.find(item => item.id === parseInt(id));
-            p.nombre = nombre;
-            p.categoria = categoria;
-            p.precio = precio;
-            p.stock = stock;
-            p.proveedor = proveedor;
-            notificar('Producto actualizado', 'success');
-        } else {
-            const nuevoId = productos.length ? Math.max(...productos.map(p => p.id)) + 1 : 1;
-            productos.push({ id: nuevoId, nombre, categoria, precio, stock, proveedor });
-            notificar('Producto agregado', 'success');
-        }
+        const datos = { nombre, categoria, precio, stock, proveedor };
 
-        guardar();
-        render();
-        modal.classList.remove('active');
+        try {
+            if (docId) {
+                await updateDoc(doc(db, 'productos', docId), datos);
+                notificar('Producto actualizado', 'success');
+            } else {
+                const proximoNumero = productos.length
+                    ? Math.max(...productos.map(p => p.id)) + 1
+                    : 1;
+                await addDoc(colRef, Object.assign({ numero: proximoNumero }, datos));
+                notificar('Producto agregado', 'success');
+            }
+            modal.classList.remove('active');
+        } catch (error) {
+            console.error(error);
+            notificar('Error al guardar', 'error');
+        }
     });
+
+    onSnapshot(
+        query(colRef, orderBy('numero', 'asc')),
+        (snapshot) => {
+            productos = [];
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                productos.push({
+                    docId: docSnap.id,
+                    id: data.numero,
+                    nombre: data.nombre,
+                    categoria: data.categoria,
+                    precio: data.precio,
+                    stock: data.stock,
+                    proveedor: data.proveedor
+                });
+            });
+            render();
+        },
+        (error) => {
+            console.error(error);
+            notificar('Error al cargar los datos de Firebase', 'error');
+        }
+    );
 
     function notificar(mensaje, tipo) {
         const el = document.getElementById('notification');
