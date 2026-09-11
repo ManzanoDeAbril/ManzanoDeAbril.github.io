@@ -1,51 +1,36 @@
-# 🌐 ManzanoDeAbril.github.io
+# 🛒 Sistema de Gestión de Productos Cloud
 
-Sitio web desarrollado como proyecto académico para la carrera de **Informática** en el **Instituto Profesional Santo Tomás**.
+Sistema web de gestión de inventario y productos para un supermercado, desarrollado como proyecto para la asignatura **Computación en la Nube** del **Instituto Profesional Santo Tomás**.
 
-El proyecto corresponde a un sitio web estático desarrollado con tecnologías web y complementado con servicios de Firebase.
+## 🚀 Funcionalidades
 
-## 🚀 Tecnologías utilizadas
+- **CRUD Completo:** Creación, lectura, actualización y eliminación de productos.
+- **Tiempo Real:** Los datos se sincronizan instantáneamente gracias a los WebSockets de Firebase.
+- **Gestión de Stock:** Control estricto de unidades y precios.
+- **Filtros de Búsqueda:** Búsqueda dinámica por nombre, categoría o proveedor.
+- **Validaciones:** Prevención de envío de formularios incompletos o con datos corruptos.
 
-- **HTML5** — estructura y contenido de las páginas.
-- **CSS3** — estilos, diseño y adaptación visual.
-- **JavaScript** — funcionalidades e interacción.
-- **Firebase** — servicios de backend y almacenamiento de datos.
-- **GitHub Pages** — publicación del sitio web.
+## ☁️ Arquitectura y Explicación Cloud
 
-## 📁 Estructura del proyecto
+Este proyecto marca la transición de un almacenamiento tradicional y local a una arquitectura basada en la Nube:
 
-```text
-ManzanoDeAbril.github.io/
-├── index.html
-├── style.css
-├── firebase-config.js
-├── firebase.json
-├── firestore.rules
-├── Instituto-Profesional-Santo-Tomas.png
-├── css/
-├── nube/
-├── productos/
-└── .firebase/
-```
+### Diferencia con `localStorage`
+En versiones o proyectos anteriores se solía utilizar `localStorage`, lo que significaba que los datos vivían **únicamente en el navegador del usuario**. Si el usuario cambiaba de dispositivo o limpiaba su caché, los datos se perdían. Al migrar a la nube (Cloud Computing), la información está centralizada en un servidor externo, permitiendo que **múltiples dispositivos accedan y modifiquen la misma información en tiempo real**, garantizando persistencia y disponibilidad.
 
-## 🎯 Objetivo
+### Componentes Cloud Utilizados
+1. **Hosting (GitHub Pages):** Se encarga de servir los archivos estáticos (HTML, CSS y JS). Aprovecha la escalabilidad automática de la infraestructura de GitHub para soportar altos volúmenes de tráfico sin requerir la configuración de servidores dedicados (arquitectura Serverless para el frontend).
+2. **Base de Datos (Firebase Firestore):** Base de datos NoSQL alojada en la nube de Google. Provee un servicio de Base de Datos como Servicio (DBaaS). Gestiona automáticamente la persistencia, escalabilidad y sincronización en tiempo real con los clientes conectados.
 
-El objetivo del proyecto es desarrollar y publicar una aplicación web funcional, aplicando conocimientos de **desarrollo frontend, diseño web, organización de archivos y servicios en la nube**.
+### Flujo de la Aplicación
+1. El usuario accede a la URL pública. El navegador descarga el frontend desde GitHub Pages.
+2. Al ingresar al sistema, el código JavaScript inicializa el SDK de Firebase y establece una conexión segura con Firestore.
+3. Se crea una suscripción en tiempo real (`onSnapshot`) a la colección de `productos`. 
+4. Cualquier cambio (crear, editar, eliminar) se envía directamente a los servidores de Firebase, los cuales procesan la operación y notifican automáticamente a todos los clientes conectados para que refresquen su interfaz.
 
-## ☁️ Firebase
+## 🛠️ Instalación y Uso (Desarrollo Local)
 
-El proyecto incluye configuración para Firebase y reglas de **Cloud Firestore**, permitiendo integrar funcionalidades que requieren almacenamiento y servicios en la nube.
+Dado que es una aplicación Serverless puramente frontend, no requiere instalación de dependencias de servidor.
 
-## 🌍 Publicación
-
-Este repositorio utiliza **GitHub Pages** para publicar el sitio web directamente desde la rama `main`.
-
-## 👨‍💻 Autor
-
-**ManzanoDeAbril**
-
-Proyecto académico — Instituto Profesional Santo Tomás.
-
----
-
-⭐ Proyecto desarrollado con fines académicos y de aprendizaje.
+1. Clona este repositorio:
+   ```bash
+   git clone https://github.com/ManzanoDeAbril/ManzanoDeAbril.github.io.git
