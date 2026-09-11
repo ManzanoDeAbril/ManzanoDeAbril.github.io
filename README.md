@@ -1,9 +1,5 @@
 # 🛒 Sistema de Gestión de Productos Cloud
 
-![Estado](https://img.shields.io/badge/Estado-Completado-success)
-![Hosting](https://img.shields.io/badge/Hosting-GitHub_Pages-blue)
-![Base_de_Datos](https://img.shields.io/badge/Base_de_Datos-Firebase_Firestore-orange)
-
 Sistema web de gestión de inventario y productos para un supermercado, desarrollado como proyecto para la asignatura **Computación en la Nube** del **Instituto Profesional Santo Tomás**.
 
 ## 🚀 Funcionalidades
